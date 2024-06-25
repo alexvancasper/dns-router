@@ -1,0 +1,13 @@
+nameservers:
+  - 192.168.100.61:53
+  - 8.8.8.8:53
+corpnameservers:
+  - 10.10.10.10:53
+corpdomain: example.com
+excludecorpdomain: vpn.example.com
+blocklist:
+  - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+blockAddress4: 0.0.0.0
+blockAddress6: 0:0:0:0:0:0:0:0
+configUpdate: true
+updateInterval: 12h

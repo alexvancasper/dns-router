@@ -1,0 +1,86 @@
+run:
+  concurrency: 4
+  timeout: 5m
+  issues-exit-code: 2
+  tests: false  
+
+output:
+  print-issued-lines: false
+  print-linter-name: true
+  uniq-by-line: false
+  path-prefix: ""
+  sort-results: true
+
+linters-settings:
+  funlen:
+    lines: 150
+    statements: 80
+  cyclop:
+    max-complexity: 14
+    package-average: 6.0
+    skip-tests: true
+  nilnil:
+    # Checks that there is no simultaneous return of `nil` error and an invalid value.
+    checked-types:
+      - ptr
+      - func
+      - iface
+      - map
+      - chan
+  nakedret:
+    # Make an issue if func has more lines of code than this setting, and it has naked returns.
+    max-func-lines: 30
+
+linters:
+  disable-all: true
+  enable:
+    - asciicheck
+    - bodyclose
+    # - depguard
+    - dogsled
+    - dupl
+    - durationcheck
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - funlen
+    - gci
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - gofmt
+    - gofumpt
+    - goheader
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - importas
+    - ineffassign
+    - lll
+    - makezero
+    - misspell
+    - nestif
+    - nilerr
+    - noctx
+    - nolintlint
+    - prealloc
+    - predeclared
+    - revive
+    - staticcheck
+    - stylecheck
+    - tagliatelle
+    - thelper
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+    - errcheck
+    - cyclop
+    - wrapcheck
+    - nakedret
+    - errname
+    - forcetypeassert

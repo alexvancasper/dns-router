@@ -84,10 +84,16 @@ func UpdateList() *BlackList {
 	return list
 }
 
-func listUpdater() {
+func listUpdater(ctx context.Context) {
 	for {
-		time.Sleep(config.UpdateInterval)
-		blackList = UpdateList()
+		select {
+		case <-ctx.Done():
+			log.Println("[listUpdater] terminating")
+			return
+		default:
+			time.Sleep(config.UpdateInterval)
+			blackList = UpdateList()
+		}
 	}
 }
 

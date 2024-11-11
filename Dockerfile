@@ -1,5 +1,5 @@
 #---Build stage---
-FROM golang:1.21.3 AS builder
+FROM golang:1.23.1 AS builder
 COPY . /go/src/
 WORKDIR /go/src/src/
 RUN go mod tidy

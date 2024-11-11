@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
@@ -19,7 +20,7 @@ var (
 	configFile = flag.String("c", "etc/config.yaml", "configuration file")
 )
 
-func startServer() {
+func startServer(ctx context.Context) {
 	tcpHandler := dns.NewServeMux()
 	tcpHandler.HandleFunc(".", HandlerTCP)
 
@@ -53,13 +54,29 @@ func startServer() {
 			log.Fatal("UDP-server start failed", err.Error())
 		}
 	}()
+	go func(ctx context.Context) {
+		for {
+			select {
+			case <-ctx.Done():
+				log.Println("[TCP/UDP Serve] shutdown")
+				tcpServer.Shutdown()
+				udpServer.Shutdown()
+				return
+			default:
+				time.Sleep(100 * time.Millisecond)
+			}
+		}
+	}(ctx)
 }
 
-func listenInterrupt() {
+func listenInterrupt(ctxCancel context.CancelFunc) {
 	sig := make(chan os.Signal, 1)
+	defer close(sig)
 	signal.Notify(sig, os.Interrupt)
 	for range sig {
+		ctxCancel()
 		log.Println("Terminating...")
+		return
 	}
 }
 
@@ -69,8 +86,10 @@ func main() {
 	var err error
 	config, err = loadConfig(COLD)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("[load config] ", err)
 	}
+
+	ctx, ctxCancel := context.WithCancel(context.Background())
 
 	corpdomain = NewCorpDomain()
 	corpdomain.Set(config.CorpDomain)
@@ -79,9 +98,9 @@ func main() {
 	cache = NewMemoryCache()
 
 	blackList = UpdateList()
-	go listUpdater()
+	go listUpdater(ctx)
 
-	startServer()
+	startServer(ctx)
 	go runPrometheus()
-	listenInterrupt()
+	listenInterrupt(ctxCancel)
 }
